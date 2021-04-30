@@ -255,7 +255,7 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
     #final.fig
     
     tiff(filename=paste0(fig_path,"scale_topo_warming.tif"),
-         width=18,height=20,units="cm",res=600)
+         width=18,height=20,units="cm",res=600,compression="lzw")
     print(final.fig)
     dev.off()
  
@@ -287,7 +287,7 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
 
     
     tiff(filename=paste0(fig_path,"cryptic_refugia.tif"),
-         width=18,height=9,units="cm",res=600)
+         width=18,height=9,units="cm",res=600,compression="lzw")
     print(stable.mf)
     dev.off()
     
@@ -310,7 +310,7 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
     
     
     tiff(filename=paste0(fig_path,"cryptic_refugia_ne.tif"),
-         width=18,height=9,units="cm",res=600)
+         width=18,height=9,units="cm",res=600,compression="lzw")
     print(stable.mf.section)
     dev.off()
     
@@ -322,7 +322,7 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
                     plot_annotation(tag_levels="A")
     
     tiff(filename=paste0(fig_path,"cryptic_refugia_fig.tif"),
-         width=18,height=9,units="cm",res=600)
+         width=18,height=9,units="cm",res=600,compression="lzw")
     print(cryptic_fig)
     dev.off()
     
@@ -355,12 +355,12 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
                           coord_fixed(expand=F)
     
     tiff(filename=paste0(fig_path,"micro_refugia.tif"),
-         width=18,height=9,units="cm",res=600)
+         width=18,height=9,units="cm",res=600,compression="lzw")
     print(stable.mb)
     dev.off()
     
     tiff(filename=paste0(fig_path,"micro_refugia_ne.tif"),
-         width=18,height=9,units="cm",res=600)
+         width=18,height=9,units="cm",res=600,compression="lzw")
     print(stable.mb.section)
     dev.off()
 
@@ -468,7 +468,7 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
                                     size=1.8,fontface="bold") 
     
     tiff(filename=paste0(fig_path,"species_response.tif"),
-         width=18,height=9,units="cm",res=600)
+         width=18,height=9,units="cm",res=600,compression="lzw")
     print(stable_plot + ratio_plot + plot_annotation(tag_levels="A"))
     dev.off()
     
@@ -522,7 +522,7 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
         theme_classic()
       
     tiff(filename=paste0(fig_path,"elev_stability.tif"),
-         width=18,height=9,units="cm",res=600)
+         width=18,height=9,units="cm",res=600,compression="lzw")
     print(ggplot(stable_long2, aes(x=mean.elev,y=frac_area_stable,color=modtype,color=modtype)) +
         geom_point(size=1.5,alpha=0.8) +
         geom_point(size=1.5,shape=1,stroke=0.5,alpha=0.8) +
@@ -558,7 +558,7 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
         labs(color="scale")
   
   tiff(filename=paste0(fig_path,"elev_AUC.tif"),
-       width=18,height=9,units="cm",res=600)
+       width=18,height=9,units="cm",res=600,compression="lzw")
       print(ggplot(stable_long3, aes(x=mean.elev,y=AUC,color=modtype,shape=SimpleHab)) +
               geom_point(size=2) +
               geom_hline(yintercept=0.8,color="grey30",size=0.8,linetype="dashed") +

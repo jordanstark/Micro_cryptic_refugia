@@ -105,7 +105,7 @@ full_patch <- patch1 / patch2 / patch3
 
 
 tiff(filename=paste0(fig_path,sp,"_NE.tif"),
-     width=18,height=12,units="cm",res=600)
+     width=18,height=12,units="cm",res=600,compression="lzw")
 print(full_patch)
 dev.off()
 
@@ -127,7 +127,7 @@ for(i in 1:length(sp_table$sp)){ #
   bio.AUC <- round(sp_table$AUC.bio[i],2)
   fine.AUC <- round(sp_table$AUC.fine[i],2)
   micro.AUC <- round(sp_table$AUC.micro[i],2)
-  
+  fignum <- i + 2
   
   
   rasterlist <- vector(mode="list",length=6)
@@ -185,18 +185,17 @@ for(i in 1:length(sp_table$sp)){ #
       theme(plot.subtitle=element_text(hjust=0.5),
             plot.title=element_text(hjust=0.5)) +
       coord_fixed(expand=F) +
-      labs(subtitle=paste0(area_km2[j]," km²"))
+      labs(subtitle=paste0(area_km2[j]," km²"),y="")
   }
 
   patch1 <- wrap_plots(plot_list[1:3],guides="collect") 
 
   patch1[[1]] <- patch1[[1]] + 
-    ggtitle(paste0("macroclimate (AUC=",bio.AUC,")")) + 
-    ylab("historical")
+    labs(title=paste0("macroclimate (AUC=",bio.AUC,")"),y="historical")
   patch1[[2]] <- patch1[[2]] + 
-    ggtitle(paste0("interpolated(AUC=",fine.AUC,")"))
+    labs(title=paste0("interpolated(AUC=",fine.AUC,")"))
   patch1[[3]] <- patch1[[3]] + 
-    ggtitle(paste0("microclimate(AUC=",fine.AUC,")"))
+    labs(title=paste0("microclimate(AUC=",fine.AUC,")"))
   
   patch2 <- wrap_plots(plot_list[4:6],guides="collect")
   patch2[[1]] <- patch2[[1]] + ylab("dispersal")
@@ -205,11 +204,12 @@ for(i in 1:length(sp_table$sp)){ #
   patch3[[1]] <- patch3[[1]] + ylab("stability")
   
   full_patch <- patch1 / patch2 / patch3 + 
-    plot_annotation(title=paste0("Probability of ",sp," occurrence"))
+    plot_annotation(title=paste0("Fig S",fignum,". Probability of ",sp," occurrence")) &
+    theme(axis.title.y=element_text(angle=90,size=14))
   
 
   tiff(filename=paste0(fig_sp_path,sp,".tif"),
-       width=10,height=6,units="in",res=600)
+       width=10,height=6,units="in",res=400,compression="lzw")
   print(full_patch)
   dev.off()
 }

@@ -37,6 +37,7 @@
   
   fine.bio.diff <- now[["fine_MAT"]] - now[["bio_MAT"]]
   micro.fine.diff <- now[["micro_MAT"]] - now[["fine_MAT"]]
+  micro.bio.diff <- now[["micro_MAT"]] - now[["bio_MAT"]]
   
   micro.warming <- cc[["micro_MAT_cc"]] - now[["micro_MAT"]]
   
@@ -147,7 +148,7 @@
 
   
   tiff(filename=paste0(fig_path,"scale_clim.tif"),
-       width=20,height=9,units="cm",res=600)
+       width=20,height=9,units="cm",res=600,compression="lzw")
   print(pA + pB + pC + pD + pE + pF + guide_area() +
           plot_layout(design=sizes,guides="collect") + 
           plot_annotation(tag_levels="A") &
@@ -156,7 +157,7 @@
   dev.off()
   
   tiff(filename=paste0(fig_path,"micro_warming.tif"),
-       width=18,height=9,units="cm",res=600)
+       width=18,height=9,units="cm",res=600,compression="lzw")
   print(gplot(micro.warming,maxpixels=1e7)+
           geom_tile(aes(fill=value)) +
           theme_void() +
@@ -186,9 +187,35 @@
   cellStats(range.micro1km,"max") 
   
   
+  min.fine1km <- aggregate(now[["fine_MAT"]],fact=1000/30,fun=min,na.rm=T)
+  max.fine1km <- aggregate(now[["fine_MAT"]],fact=1000/30,fun=max,na.rm=T)
+  
+  range.fine1km <- max.fine1km - min.fine1km
+  
+  fun.se <- function(x,na.rm=T) sd(x,na.rm=T)/sqrt(length(!is.na(x)))
+  
+  
+  cellStats(range.fine1km,"mean")  
+  cellStats(range.fine1km,"min") 
+  cellStats(range.fine1km,"max") 
+  
+  
+  cellStats(micro.bio.diff,"max")
+  cellStats(micro.bio.diff,"min")
+  
+  cellStats(micro.fine.diff,"max")
+  cellStats(micro.fine.diff,"min")
+  
+  
+  
+  
+  
   cellStats(now,"min")
   cellStats(now,"max")  
   
   cellStats(cc,"min")
   cellStats(cc,"max")  
+  
+  cellStats(micro.warming,"min")
+  cellStats(micro.warming,"max")
   
