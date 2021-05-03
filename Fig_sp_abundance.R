@@ -193,9 +193,9 @@ for(i in 1:length(sp_table$sp)){ #
   patch1[[1]] <- patch1[[1]] + 
     labs(title=paste0("macroclimate (AUC=",bio.AUC,")"),y="historical")
   patch1[[2]] <- patch1[[2]] + 
-    labs(title=paste0("interpolated(AUC=",fine.AUC,")"))
+    labs(title=paste0("interpolated (AUC=",fine.AUC,")"))
   patch1[[3]] <- patch1[[3]] + 
-    labs(title=paste0("microclimate(AUC=",fine.AUC,")"))
+    labs(title=paste0("microclimate (AUC=",fine.AUC,")"))
   
   patch2 <- wrap_plots(plot_list[4:6],guides="collect")
   patch2[[1]] <- patch2[[1]] + ylab("dispersal")
