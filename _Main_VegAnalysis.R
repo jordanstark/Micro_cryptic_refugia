@@ -207,13 +207,6 @@
                    bio=   ~ (bio_MAT + bio_MAT2)+(log_tci + totrad)+Easting+Northing)
   jobRunScript(paste0(scripts,"HMSC_models.R"),importEnv=T)
   
-  
-  outname <- "MAT+space.RData"
-  formulas <- list(micro= ~ (micro_MAT + micro_MAT2)+Easting+Northing,
-                   fine=  ~ (fine_MAT + fine_MAT2)+Easting+Northing,
-                   bio=   ~ (bio_MAT + bio_MAT2)+Easting+Northing)
-  jobRunScript(paste0(scripts,"HMSC_models.R"),importEnv=T)
-  
   outname <- "elev+space.RData"
   formulas <- list(elev= ~ elev + Easting + Northing)
   jobRunScript(paste0(scripts,"HMSC_models.R"),importEnv=T)
@@ -225,7 +218,6 @@
   
   # list of models to compare (shortened name = .RData file)
   models <- list("elev"="elev+space.RData",
-                 "MAT"="MAT+space.RData",
                  "MAT+topo"="MAT+topo+space.RData",
                  "MATxtopo"="MATxtopo+space.RData"
                  )
@@ -253,9 +245,7 @@
     short_modname <- "MAT+topo"
     jobRunScript(paste0(scripts,"HMSC_species_fit.R"),importEnv=T)
     
-    modlist_path <- "MAT+space.RData"
-    short_modname <- "MAT"
-    jobRunScript(paste0(scripts,"HMSC_species_fit.R"),importEnv=T)
+
 
 ##########################################################
 ############# Predict presence and abundance #############
@@ -284,13 +274,10 @@
   #          in folder output_path/predicts_short_modname
 
 
-  modlist_path <- "MAT+topo+space.RData"
-  short_modname <- "MAT+topo"
-  source(paste0(scripts,"HMSC_species_predict.R"))
-  
-  modlist_path <- "MAT+space.RData"
-  short_modname <- "MAT"
-  source(paste0(scripts,"HMSC_species_predict.R"))
+  ## prediction rasters for MATxtopo+space model for all species, regardless of AUC
+  modlist_path <- "MATxtopo+space.RData"
+  short_modname <- "MATxtopo"
+  source(paste0(scripts,"HMSC_all_species_predict.R"))
   
   
   
@@ -308,10 +295,8 @@
   
 
 
-  short_modname <- "MAT+topo"
-  jobRunScript(paste0(scripts,"Summarize_distributions.R"),importEnv=T)
   
-  short_modname <- "MAT"
+  short_modname <- "MATxtopo_all"
   jobRunScript(paste0(scripts,"Summarize_distributions.R"),importEnv=T)
   
 ##########################################################
@@ -336,21 +321,8 @@
   # Examine_sp_outputs.R
   
 
-# repeat figures for other model structures
-  modlist_path <- "MAT+topo+space.RData"
-  short_modname <- "MAT+topo"
-  
-  jobRunScript(paste0(scripts,"fig_sp_topo.R"),importEnv=T)
-  examplesp <- "LIRITUL"
-  jobRunScript(paste0(scripts,"Fig_sp_abundance.R"),importEnv=T)
-  
-  modlist_path <- "MAT+space.RData"
-  short_modname <- "MAT"
-  
-  jobRunScript(paste0(scripts,"fig_sp_topo.R"),importEnv=T)
-  examplesp <- "BETUALL"
-  jobRunScript(paste0(scripts,"Fig_sp_abundance.R"),importEnv=T)
-  
-  
+# repeat figures for all species
+  modlist_path <- "MATxtopo+space.RData"
+  short_modname <- "MATxtopo_all"
   
   
