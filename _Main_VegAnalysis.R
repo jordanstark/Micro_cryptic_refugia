@@ -309,6 +309,9 @@
 
 # sample points, species change and hex figures
   jobRunScript(paste0(scripts,"fig_sp_topo.R"),importEnv=T)
+  
+# lapse rate change with climate figure
+  jobRunScrip(paste0(scripts,"Fig_lapse_rates.R"),importEnv=T)
 
 # parkwide change in species distribution 
   # (1 tif per sp of whole park, plus zoomed in fig for example sp)
