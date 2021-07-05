@@ -127,7 +127,7 @@ for(i in 1:length(sp_table$sp)){ #
   bio.AUC <- round(sp_table$AUC.bio[i],2)
   fine.AUC <- round(sp_table$AUC.fine[i],2)
   micro.AUC <- round(sp_table$AUC.micro[i],2)
-  fignum <- i + 2
+  fignum <- i + 7
   
   
   rasterlist <- vector(mode="list",length=6)

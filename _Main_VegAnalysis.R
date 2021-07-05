@@ -6,7 +6,7 @@
 ############# Setup and directory structure #############
 
 ## pathways
-  scripts <- "E:/GithubRepos/Smokies_Veg/Clean_analysis/"
+  scripts <- "E:/GithubRepos/Micro_cryptic_refugia/"
     # all scripts used in this master script  
   
   main <- "E:/Smokies_Veg/"
@@ -311,7 +311,7 @@
   jobRunScript(paste0(scripts,"fig_sp_topo.R"),importEnv=T)
   
 # lapse rate change with climate figure
-  jobRunScrip(paste0(scripts,"Fig_lapse_rates.R"),importEnv=T)
+  jobRunScript(paste0(scripts,"Fig_lapse_rates.R"),importEnv=T)
 
 # parkwide change in species distribution 
   # (1 tif per sp of whole park, plus zoomed in fig for example sp)
