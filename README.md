@@ -1,5 +1,5 @@
 # Micro_cryptic_refugia
- Code associated with "Projections of microclimate-based species distributions in complex terrain indicate widespread cryptic refugia under climate change
+ Code associated with "Microclimate-based species distribution models in complex terrain indicate widespread cryptic refugia from climate change"
 
 Jordan Stark
 
