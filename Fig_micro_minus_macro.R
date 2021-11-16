@@ -53,14 +53,14 @@
   scalebar_data <- data.frame(x=230000,xend=240000,y=3955000)
   scalebar_data_zoom <- data.frame(x=292000,xend=293000,y=3960500)
 
+  pix <- 1e8
   
-  
-  pA <- gplot(now[["bio_MAT"]],maxpixels=1e7) +
+  pA <- gplot(now[["bio_MAT"]],maxpixels=pix) +
           geom_tile(aes(fill=value)) +
           geom_segment(data=scalebar_data,aes(x=x,xend=xend,y=y,yend=y),
-                       arrow=arrow(angle=90,ends="both",length=unit(0.01,"npc")))+
+                       arrow=arrow(angle=90,ends="both",length=unit(0.02,"npc")))+
           geom_text(aes(x=mean(c(scalebar_data$x,scalebar_data$xend)),
-                        y=scalebar_data$y+3000,label="10 km"),size=3) +
+                        y=scalebar_data$y+3000,label="10 km"),size=2.5) +
           theme_void() +
           scale_fill_distiller(name="MAT",
                                limits=c(now.min,now.max),
@@ -71,7 +71,7 @@
           xlab("") + ylab("")  +
           coord_fixed(expand=F)
   
-  pB <- gplot(now[["fine_MAT"]],maxpixels=1e7)+
+  pB <- gplot(now[["fine_MAT"]],maxpixels=pix)+
           geom_tile(aes(fill=value)) +
           theme_void() +
           scale_fill_distiller(name="MAT",
@@ -83,7 +83,7 @@
           xlab("") + ylab("")  +
           coord_fixed(expand=F)
   
-  pC <- gplot(now[["micro_MAT"]],maxpixels=1e7)   +
+  pC <- gplot(now[["micro_MAT"]],maxpixels=pix)   +
           geom_tile(aes(fill=value)) +
           theme_void() +
           scale_fill_distiller(name="MAT",
@@ -95,7 +95,7 @@
           xlab("") + ylab("")  +
           coord_fixed(expand=F)
   
-  pD <- gplot(fine.bio.diff,maxpixels=1e7)+
+  pD <- gplot(fine.bio.diff,maxpixels=pix)+
           geom_tile(aes(fill=value)) +
           theme_void() +
           scale_fill_distiller(name="Change\nin MAT",
@@ -108,7 +108,7 @@
           coord_fixed(expand=F)
   
 
-  pE <- gplot(micro.fine.diff,maxpixels=1e7)+
+  pE <- gplot(micro.fine.diff,maxpixels=pix)+
           geom_tile(aes(fill=value)) +
           theme_void() +
           scale_fill_distiller(name="Change\nin MAT",
@@ -120,12 +120,14 @@
           xlab("") + ylab("") +
           coord_fixed(expand=F)
 
-  pF <- gplot(micro.fine.section,maxpixels=1e7)+
+  pF <- gplot(micro.fine.section,maxpixels=pix)+
           geom_tile(aes(fill=value)) +
           geom_segment(data=scalebar_data_zoom,aes(x=x,xend=xend,y=y,yend=y),
-                       arrow=arrow(angle=90,ends="both",length=unit(0.01,"npc")))+
+                       arrow=arrow(angle=90,ends="both",length=unit(0.02,"npc")))+
           geom_text(aes(x=mean(c(scalebar_data_zoom$x,scalebar_data_zoom$xend)),
-                        y=scalebar_data_zoom$y+1000,label="1 km"),size=3) +
+                        y=scalebar_data_zoom$y+1000,label="1 km"),size=2.5) +
+          geom_segment(x=312500,y=3956000,xend=312500,yend=3962000,arrow=arrow(length=unit(0.05,"npc"))) +
+          geom_text(aes(label="N"),x=312500,y=3962700,size=2.5) +
           theme_void() +
           scale_fill_distiller(name="Change\nin MAT",
                                limits=c(min.diff,max.diff),
@@ -148,25 +150,36 @@
 
   
   tiff(filename=paste0(fig_path,"scale_clim.tif"),
-       width=20,height=9,units="cm",res=600,compression="lzw")
+       width=16.8,height=7,units="cm",res=800,compression="lzw")
   print(pA + pB + pC + pD + pE + pF + guide_area() +
           plot_layout(design=sizes,guides="collect") + 
-          plot_annotation(tag_levels="A") &
-          theme(plot.tag=element_text(size=10, hjust=-2,vjust=1.5),
-                plot.tag.position=c(0,1)))
+          plot_annotation(tag_levels="a") &
+          theme(plot.tag=element_text(size=8, hjust=-2,vjust=1),
+                plot.tag.position=c(0,1),
+                text=element_text(size=8)))
   dev.off()
   
+  scalebar_data <- data.frame(x=300000,xend=310000,y=3927000)
+  
+  
   tiff(filename=paste0(fig_path,"micro_warming.tif"),
-       width=18,height=9,units="cm",res=600,compression="lzw")
-  print(gplot(micro.warming,maxpixels=1e7)+
+       width=16.8,height=7,units="cm",res=800,compression="lzw")
+  print(gplot(micro.warming,maxpixels=pix)+
           geom_tile(aes(fill=value)) +
           theme_void() +
           scale_fill_distiller(name="warming",
                                palette="RdYlBu",
                                direction=-1,
                                na.value="white") +
+          geom_segment(data=scalebar_data,aes(x=x,xend=xend,y=y,yend=y),
+                       arrow=arrow(angle=90,ends="both",length=unit(0.02,"npc")))+
+          geom_text(aes(x=mean(c(scalebar_data$x,scalebar_data$xend)),
+                        y=scalebar_data$y+1000,label="10 km"),size=2.5) +
+          geom_segment(x=235000,y=3950000,xend=235000,yend=3960000,arrow=arrow(length=unit(0.05,"npc"))) +
+          geom_text(aes(label="N"),x=235000,y=3960700,size=2.5) +
           xlab("") + ylab("")  +
-          coord_fixed(expand=F) 
+          coord_fixed(expand=F)  +
+          theme(text=element_text(size=8))
   )
   dev.off()
   

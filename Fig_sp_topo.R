@@ -128,10 +128,10 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
     
     p1 <- ggplot(ptdat,aes(x=logsd,y=elev,z=bio_MAT)) +
                   ylim(ylim) +
-                  ggtitle("macroclimate") 
+                  ggtitle("macroclimate",) 
     p2 <- ggplot(ptdat,aes(x=logsd,y=elev,z=fine_MAT)) +
                   scale_y_continuous(limits=ylim,labels=NULL,breaks=NULL) +
-                  ggtitle("interpolation")
+                  ggtitle("downscaled")
     p3 <- ggplot(ptdat,aes(x=logsd,y=elev,z=micro_MAT)) +
                   scale_y_continuous(limits=ylim,labels=NULL,breaks=NULL) +
                   ggtitle("microclimate")
@@ -223,13 +223,19 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
                     theme_classic() &
                     xlab("") &
                     ylab("") &
-                    theme(plot.title=element_text(hjust=0.5,face="bold"))
+                    theme(plot.title=element_text(hjust=0.5,face="bold",size=8),
+                          text=element_text(size=8),
+                          legend.key.height=unit(0.02,"npc"),
+                          legend.key.width=unit(0.03,"npc"))
     
     layout <- "
+                ######GGGGGG#####
                 #AAAAAAAAAAAAAAAA
                 #AAAAAAAAAAAAAAAA
                 #AAAAAAAAAAAAAAAA
                 #AAAAAAAAAAAAAAAA
+                #AAAAAAAAAAAAAAAA
+                #BBBBBBBBBBBBBBBB
                 #BBBBBBBBBBBBBBBB
                 EBBBBBBBBBBBBBBBB
                 EBBBBBBBBBBBBBBBB
@@ -238,24 +244,28 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
                 ECCCCCCCCCCCCCCCC
                 ECCCCCCCCCCCCCCCC
                 #CCCCCCCCCCCCCCCC
+                #CCCCCCCCCCCCCCCC
                 #DDDDDDDDDDDDDDDD
                 #DDDDDDDDDDDDDDDD
                 #DDDDDDDDDDDDDDDD
                 #DDDDDDDDDDDDDDDD
-                ######FFFFFF#####"
+                #DDDDDDDDDDDDDDDD
+                #####FFFFFFFF####"
     
     final.fig <- full.patch + 
-                  grid::textGrob("elevation (m)",rot=90,vjust=1,
-                                 gp=grid::gpar(fontface="bold")) + 
-                  grid::textGrob("stream distance (m)", vjust=-1,
-                                 gp=grid::gpar(fontface="bold")) + 
+                  grid::textGrob("elevation (m)",rot=90,vjust=1.5,
+                                 gp=grid::gpar(fontface="bold",fontsize=8)) + 
+                  grid::textGrob("distance to stream (m)", vjust=-0.75,
+                                 gp=grid::gpar(fontface="bold",fontsize=8)) + 
+                  grid::textGrob("climate predictor",vjust=1.5,
+                                 gp=grid::gpar(fontface="bold",fontsize=8)) +
                   plot_layout(design=layout)
 
 
     #final.fig
     
     tiff(filename=paste0(fig_path,"scale_topo_warming.tif"),
-         width=18,height=20,units="cm",res=600,compression="lzw")
+         width=11,height=12.4,units="cm",res=800,compression="lzw")
     print(final.fig)
     dev.off()
  
@@ -271,29 +281,37 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
     diff.disp.fb <- change.cc$frac.fine.expand - change.cc$frac.bio.expand
     diff.disp.mb <- change.cc$frac.micro.expand - change.cc$frac.bio.expand
     
-    scale_cols <- c("tomato","goldenrod1","royalblue3")
+    scale_cols <- c("tomato","darkorange1","royalblue3")
+
+    scalebar_data <- data.frame(x=300000,xend=310000,y=3927000)
     
-    
-    stable.mf <- gplot(diff.stable.mf,maxpixels=1e7)+
+    stable.mf <- gplot(diff.stable.mf,maxpixels=1e8)+
                   geom_tile(aes(fill=value)) +
                   theme_void() +
                   scale_fill_gradient2(name="difference\nin stability",
                                        low=scale_cols[2],
                                        high=scale_cols[3],
                                        na.value="white")  +
-                  theme(text=element_text(size=12),
+                  geom_segment(data=scalebar_data,aes(x=x,xend=xend,y=y,yend=y),
+                               arrow=arrow(angle=90,ends="both",length=unit(0.02,"npc")))+
+                  geom_text(aes(x=mean(c(scalebar_data$x,scalebar_data$xend)),
+                                y=scalebar_data$y+2000,label="10 km"),size=2.5) +
+                  theme(text=element_text(size=8),
                         plot.title=element_text(hjust=0.5)) +
                   coord_fixed(expand=F)
 
     
-    tiff(filename=paste0(fig_path,"cryptic_refugia.tif"),
-         width=18,height=9,units="cm",res=600,compression="lzw")
-    print(stable.mf)
-    dev.off()
+    # tiff(filename=paste0(fig_path,"cryptic_refugia.tif"),
+    #      width=16.8,height=7,units="cm",res=800,compression="lzw")
+    # print(stable.mf)
+    # dev.off()
     
     ne.ext <- extent(290000,314000,3949000,3964000)
     
     section <- crop(diff.stable.mf,ne.ext)
+    
+    scalebar_data_zoom <- data.frame(x=292000,xend=293000,y=3960500)
+    
     
     stable.mf.section <-gplot(section,maxpixels=1e7)+
                               geom_tile(aes(fill=value)) +
@@ -304,65 +322,71 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
                                                    na.value="white",
                                                    limits=c(cellStats(diff.stable.mf,"min"),
                                                             cellStats(diff.stable.mf,"max"))) +
-                              theme(text=element_text(size=12),
+                              geom_segment(data=scalebar_data_zoom,aes(x=x,xend=xend,y=y,yend=y),
+                                           arrow=arrow(angle=90,ends="both",length=unit(0.02,"npc")))+
+                              geom_text(aes(x=mean(c(scalebar_data_zoom$x,scalebar_data_zoom$xend)),
+                                            y=scalebar_data_zoom$y+1000,label="1 km"),size=2.5) +
+                              geom_segment(x=312500,y=3956000,xend=312500,yend=3962000,arrow=arrow(length=unit(0.05,"npc"))) +
+                              geom_text(aes(label="N"),x=312500,y=3962700,size=2.5) +
+                              theme(text=element_text(size=8),
                                     plot.title=element_text(hjust=0.5)) +
                               coord_fixed(expand=F)
     
     
-    tiff(filename=paste0(fig_path,"cryptic_refugia_ne.tif"),
-         width=18,height=9,units="cm",res=600,compression="lzw")
-    print(stable.mf.section)
-    dev.off()
+    # tiff(filename=paste0(fig_path,"cryptic_refugia_ne.tif"),
+    #      width=11.2,height=7,units="cm",res=800,compression="lzw")
+    # print(stable.mf.section)
+    # dev.off()
     
     
     des <- "AAAABBC"
     
     cryptic_fig <- stable.mf + stable.mf.section +
                     plot_layout(guides="collect") +
-                    plot_annotation(tag_levels="A")
+                    plot_annotation(tag_levels="a")
     
     tiff(filename=paste0(fig_path,"cryptic_refugia_fig.tif"),
-         width=18,height=9,units="cm",res=600,compression="lzw")
+         width=16.8,height=7,units="cm",res=800,compression="lzw")
     print(cryptic_fig)
     dev.off()
     
-    
-    stable.mb <- gplot(diff.stable.mb,maxpixels=1e7)+
-                  geom_tile(aes(fill=value)) +
-                  theme_void() +
-                  scale_fill_gradient2(name="difference\nin stability",
-                                       low=scale_cols[1],
-                                       high=scale_cols[3],
-                                       na.value="white")  +
-                  theme(text=element_text(size=12),
-                        plot.title=element_text(hjust=0.5)) +
-                  coord_fixed(expand=F)
-    
-    
-    mb.section <- crop(diff.stable.mb,ne.ext)
-    
-    stable.mb.section <-gplot(mb.section,maxpixels=1e7)+
-                          geom_tile(aes(fill=value)) +
-                          theme_void() +
-                          scale_fill_gradient2(name="difference\nin stability",
-                                               low=scale_cols[1],
-                                               high=scale_cols[3],
-                                               na.value="white",
-                                               limits=c(cellStats(diff.stable.mb,"min"),
-                                                        cellStats(diff.stable.mb,"max"))) +
-                          theme(text=element_text(size=12),
-                                plot.title=element_text(hjust=0.5)) +
-                          coord_fixed(expand=F)
-    
-    tiff(filename=paste0(fig_path,"micro_refugia.tif"),
-         width=18,height=9,units="cm",res=600,compression="lzw")
-    print(stable.mb)
-    dev.off()
-    
-    tiff(filename=paste0(fig_path,"micro_refugia_ne.tif"),
-         width=18,height=9,units="cm",res=600,compression="lzw")
-    print(stable.mb.section)
-    dev.off()
+    # 
+    # stable.mb <- gplot(diff.stable.mb,maxpixels=1e7)+
+    #               geom_tile(aes(fill=value)) +
+    #               theme_void() +
+    #               scale_fill_gradient2(name="difference\nin stability",
+    #                                    low=scale_cols[1],
+    #                                    high=scale_cols[3],
+    #                                    na.value="white")  +
+    #               theme(text=element_text(size=12),
+    #                     plot.title=element_text(hjust=0.5)) +
+    #               coord_fixed(expand=F)
+    # 
+    # 
+    # mb.section <- crop(diff.stable.mb,ne.ext)
+    # 
+    # stable.mb.section <-gplot(mb.section,maxpixels=1e7)+
+    #                       geom_tile(aes(fill=value)) +
+    #                       theme_void() +
+    #                       scale_fill_gradient2(name="difference\nin stability",
+    #                                            low=scale_cols[1],
+    #                                            high=scale_cols[3],
+    #                                            na.value="white",
+    #                                            limits=c(cellStats(diff.stable.mb,"min"),
+    #                                                     cellStats(diff.stable.mb,"max"))) +
+    #                       theme(text=element_text(size=12),
+    #                             plot.title=element_text(hjust=0.5)) +
+    #                       coord_fixed(expand=F)
+    # 
+    # tiff(filename=paste0(fig_path,"micro_refugia.tif"),
+    #      width=18,height=9,units="cm",res=600,compression="lzw")
+    # print(stable.mb)
+    # dev.off()
+    # 
+    # tiff(filename=paste0(fig_path,"micro_refugia_ne.tif"),
+    #      width=18,height=9,units="cm",res=600,compression="lzw")
+    # print(stable.mb.section)
+    # dev.off()
 
     
     
@@ -420,16 +444,16 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
                       theme_classic() +
                       xlab("") +
                       ylab("future area:current area\n") +
-                      theme(text=element_text(size=10,color="black"),
+                      theme(text=element_text(size=8,color="black"),
                             axis.line = element_line(color="black",size=0.5),
                             axis.ticks = element_line(color="black",size=0.5)) +
                       scale_x_discrete(labels=c("macroclimate",
-                                                "interpolation",
+                                                "downscaled",
                                                 "microclimate")) +
                       scale_y_continuous(expand=c(0,0),limits=c(0,1.05)) +
-                      geom_text_repel(aes(label=sp),max.overlaps=5,
+                      geom_text_repel(aes(label=sp),max.overlaps=6,
                                       min.segment.length=10,
-                                      size=1.8,fontface="bold") 
+                                      size=1.5,fontface="bold") 
     
     # change_plot <- ggplot(change_cleaned_long,aes(x=modtype,y=change_area_km2)) +
     #   geom_violin(aes(fill=modtype,group=modtype),show.legend=F) +
@@ -456,20 +480,20 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
                     theme_classic() +
                     xlab("") +
                     ylab("") +
-                    theme(text=element_text(size=10,color="black"),
+                    theme(text=element_text(size=8,color="black"),
                           axis.line = element_line(color="black",size=0.5),
                           axis.ticks = element_line(color="black",size=0.5)) +
                     scale_x_discrete(labels=c("macroclimate",
-                                              "interpolation",
+                                              "downscaled",
                                               "microclimate")) +
                     scale_y_continuous(expand=c(0,0)) +
-                    geom_text_repel(aes(label=sp),max.overlaps=5,
+                    geom_text_repel(aes(label=sp),max.overlaps=6,
                                     min.segment.length=10,
-                                    size=1.8,fontface="bold") 
+                                    size=1.5,fontface="bold") 
     
     tiff(filename=paste0(fig_path,"species_response.tif"),
-         width=18,height=9,units="cm",res=600,compression="lzw")
-    print(stable_plot + ratio_plot + plot_annotation(tag_levels="A"))
+         width=15.8,height=7,units="cm",res=800,compression="lzw")
+    print(stable_plot + ratio_plot + plot_annotation(tag_levels="a"))
     dev.off()
     
     
@@ -522,20 +546,20 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
         theme_classic()
       
     tiff(filename=paste0(fig_path,"elev_stability.tif"),
-         width=18,height=9,units="cm",res=600,compression="lzw")
+         width=11,height=6,units="cm",res=600,compression="lzw")
     print(ggplot(stable_long2, aes(x=mean.elev,y=frac_area_stable,color=modtype,color=modtype)) +
-        geom_point(size=1.5,alpha=0.8) +
-        geom_point(size=1.5,shape=1,stroke=0.5,alpha=0.8) +
-        scale_color_discrete(type=scale_cols,
-                             labels=c("macroclimate","interpolation","microclimate")) +
-        geom_smooth(se=F,alpha=0.8) +
+        geom_point(size=1.5,alpha=0.6) +
+        geom_point(size=1.5,shape=1,stroke=0.5,alpha=0.6) +
+        scale_color_discrete(type=c("tomato","goldenrod3","royalblue3"),
+                             labels=c("macroclimate","downscaled","microclimate")) +
+        geom_line(stat="smooth",se=F,alpha=0.7,size=1) +
         theme_classic() +
         xlab("\nmean elevation (m)") +
         ylab("stable future:current area\n")  +    
-        theme(text=element_text(size=10),
+        theme(text=element_text(size=8),
               axis.text=element_text(color="black"),
-              legend.position=c(0.85,0.8),) +
-        ylim(0,1) +
+              legend.position=c(0.85,0.8)) +
+        ylim(0,1) + xlim(550,1850) +
         labs(color=""))
     dev.off()
       

@@ -69,7 +69,7 @@ plot_list <- list()
 for(j in 1:nlayers(rstack)){
   pal <- ifelse(j<4,"BuGn",ifelse(j>6,"YlGn","PuBuGn"))
   
-  plot_list[[j]] <- gplot(rstack[[j]],maxpixels=1e6) +
+  plot_list[[j]] <- gplot(rstack[[j]],maxpixels=1e7) +
     geom_tile(aes(fill=value)) +
     theme_void() +
     scale_fill_distiller(name="",
@@ -78,35 +78,56 @@ for(j in 1:nlayers(rstack)){
                          direction=1,
                          na.value="white") +
     theme(plot.title=element_text(hjust=0.5),
-          text=element_text(size=10),
-          axis.title.y=element_text(size=14),
+          text=element_text(size=8),
+          axis.title.y=element_text(size=8),
+          title=element_text(size=8),
           legend.key.height=unit(0.4,"cm")) +
     ylab("") +
     coord_fixed(expand=F) 
 }
 
+scalebar_data_zoom <- data.frame(x=292000,xend=293000,y=3960500)
+
+
 patch1 <- wrap_plots(plot_list[1:3],guides="collect") 
 
 patch1[[1]] <- patch1[[1]] + 
-  ggtitle(paste0("macroclimate")) + 
-  ylab("historical")
+  labs(x="macroclimate") +
+  geom_segment(data=scalebar_data_zoom,aes(x=x,xend=xend,y=y,yend=y),
+               arrow=arrow(angle=90,ends="both",length=unit(0.02,"npc")))+
+  geom_text(aes(x=mean(c(scalebar_data_zoom$x,scalebar_data_zoom$xend)),
+                y=scalebar_data_zoom$y+1000,label="1 km"),size=2.5) +
+  geom_segment(x=312500,y=3956000,xend=312500,yend=3962000,arrow=arrow(length=unit(0.05,"npc"))) +
+  geom_text(aes(label="N"),x=312500,y=3962700,size=2.5) 
 patch1[[2]] <- patch1[[2]] + 
-  ggtitle(paste0("interpolated"))
+  labs(x="downscaled")
 patch1[[3]] <- patch1[[3]] + 
-  ggtitle(paste0("microclimate"))
+  labs(x="microclimate")
 
 patch2 <- wrap_plots(plot_list[4:6],guides="collect")
-patch2[[1]] <- patch2[[1]] + ylab("dispersal")
 
 patch3 <- wrap_plots(plot_list[7:9],guides="collect")
-patch3[[1]] <- patch3[[1]] + ylab("stability")
 
 full_patch <- patch1 / patch2 / patch3 
 
+layout <- "
+          #AAAAAA
+          DAAAAAA
+          DBBBBBB
+          DBBBBBB
+          DCCCCCC
+          #CCCCCC
+"
+
+final.fig <- full_patch + 
+  grid::textGrob("habitat suitability scenario",rot=90,vjust=4,
+                 gp=grid::gpar(fontsize=8)) +
+  plot_layout(design=layout)
+
 
 tiff(filename=paste0(fig_path,sp,"_NE.tif"),
-     width=18,height=12,units="cm",res=600,compression="lzw")
-print(full_patch)
+     width=16.8,height=10,units="cm",res=800,compression="lzw")
+print(final.fig)
 dev.off()
 
 ### full figs for all sp
