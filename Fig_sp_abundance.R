@@ -143,6 +143,8 @@ sp_table <- data.frame(sp=AUCs$sp,
                        disp.fine=NA,
                        disp.micro=NA)
 
+scalebar_data <- data.frame(x=300000,xend=310000,y=3927000)
+
 for(i in 1:length(sp_table$sp)){ #
   sp <- sp_table$sp[i]
   bio.AUC <- round(sp_table$AUC.bio[i],2)
@@ -212,9 +214,15 @@ for(i in 1:length(sp_table$sp)){ #
   patch1 <- wrap_plots(plot_list[1:3],guides="collect") 
 
   patch1[[1]] <- patch1[[1]] + 
-    labs(title=paste0("macroclimate (AUC=",bio.AUC,")"),y="historical")
+    labs(title=paste0("macroclimate (AUC=",bio.AUC,")"),y="historical") +
+    geom_segment(data=scalebar_data,aes(x=x,xend=xend,y=y,yend=y),
+                 arrow=arrow(angle=90,ends="both",length=unit(0.02,"npc")))+
+    geom_text(aes(x=mean(c(scalebar_data$x,scalebar_data$xend)),
+                  y=scalebar_data$y+3000,label="10 km"),size=3.5) +
+    geom_segment(x=235000,y=3950000,xend=235000,yend=3960000,arrow=arrow(length=unit(0.05,"npc"))) +
+    geom_text(aes(label="N"),x=235000,y=3961300,size=3.5)
   patch1[[2]] <- patch1[[2]] + 
-    labs(title=paste0("interpolated (AUC=",fine.AUC,")"))
+    labs(title=paste0("downscaled (AUC=",fine.AUC,")"))
   patch1[[3]] <- patch1[[3]] + 
     labs(title=paste0("microclimate (AUC=",fine.AUC,")"))
   

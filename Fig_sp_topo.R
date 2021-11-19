@@ -587,7 +587,7 @@ if(!dir.exists(fig_path)) dir.create(fig_path)
               geom_point(size=2) +
               geom_hline(yintercept=0.8,color="grey30",size=0.8,linetype="dashed") +
               scale_color_discrete(type=scale_cols,aesthetics=c("color","fill"),
-                                   labels=c("macroclimate","interpolation","microclimate")) +
+                                   labels=c("macroclimate","downscaled","microclimate")) +
               theme_classic() +
               xlab("\nmean elevation (m)") +
               ylab("AUC\n")  +    
